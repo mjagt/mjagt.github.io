@@ -140,6 +140,7 @@
             var layerId = getUrlVars()["layerId"];
 
             var featureLayer;
+            var today;
             var foundLocation;
             var foundAddress;
             var previousAddress;
@@ -327,9 +328,16 @@
                 editFeature = new Graphic({
                     geometry: foundLocation,
                     attributes: {
+                        "Ritnummer": rideNumber,
+                        "Datum": today,
+                        "KmStart": previousMileage,
                         "KmEind": endMileage.value,
+                        "Van": previousAddress,
                         "Naar": foundAddress,
                         "Prive": 0,
+                        "RitKm": rideMileageCount,
+                        "Latitude": foundLocation.latitude,
+                        "Longitude": foundLocation.longitude
                     }
                 });
 
@@ -384,13 +392,16 @@
             // Get ride number
             function getRideNumber() {
                 var query = featureLayer.createQuery();
-                var today = new Date().toLocaleDateString('en-US', {
+                today = new Date().toLocaleDateString('en-US', {
                     month: '2-digit',
                     day: '2-digit',
-                    year: 'numeric'
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
                 });
                 query.outFields = "Ritnummer";
-                query.where = "Datum > Date '" + today + " 00:00:00'";
+                query.where = "Datum > Date '" + today + "'";
                 featureLayer.queryFeatureCount(query).then(function (response) {
                     rideNumber = response + 1;
                     rideNumberDiv.innerHTML = rideNumber;
