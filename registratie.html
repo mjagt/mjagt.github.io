@@ -1,0 +1,501 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <!-- <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no" /> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3pro.css"> -->
+    <title>Access ArcGIS Online items using OAuthentication - 4.10</title>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.10/esri/css/main.css">
+
+    <script src="https://js.arcgis.com/4.10/"></script>
+    <style>
+        html,
+        body {
+            font-family: Lucida Sans, Lucida Grande, Arial !important;
+            font-size: 18px;
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+            background: lightgray;
+        }
+
+        /* div {
+            -ms-transform: scale(1.1, 1.1);
+            -webkit-transform: scale(1.1, 1.1);
+            transform: scale(1.1, 1.1);
+        } */
+
+        input {
+            width: 316px;
+            height: 64px;
+            font-size: 38px;
+            color: white;
+            padding: 5px;
+            background: gray;
+            border: 5px solid white;
+            border-radius: 15px;
+            text-align: right;
+        }
+
+        button {
+            width: 64px;
+            height: 64px;
+            background-color: #ffbb00;
+            background-repeat: no-repeat;
+            background-position: center;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            padding: 5px;
+            margin: 5px;
+            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+        }
+
+        #registerMileage {
+            background-image: url("images/save.png");
+            background-size: 70%;
+        }
+
+        #updateAddress {
+            background-image: url("images/restart.png");
+            background-size: 70%;
+        }
+
+        #plus {
+            background-image: url("images/plus.png");
+            background-size: 100%;
+        }
+
+        #minus {
+            background-image: url("images/minus.png");
+            background-size: 100%;
+        }
+
+        /* .esri-item-gallery .esri-item-container {
+            float: left;
+            text-align: center;
+            padding: 10px;
+            width: 204px;
+            display: inline-block;
+        }
+
+        .esri-item-gallery .esri-image {
+            width: 200px;
+            height: 133px;
+            border: 2px solid gray;
+            border-radius: 5px;
+        }
+
+        .esri-item-gallery .esri-null-image {
+            line-height: 133px;
+            text-align: center;
+            color: #999999;
+        }
+
+        .esri-item-gallery .esri-title {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .esri-item-gallery .esri-null-title {
+            color: #999999;
+        } */
+
+        .action {
+            color: blue;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .calculatedValues {
+            text-align: left;
+        }
+    </style>
+    <script>
+        require([
+            "dojo/_base/array",
+            "esri/portal/Portal",
+            "esri/portal/PortalItem",
+            "esri/identity/OAuthInfo",
+            "esri/identity/IdentityManager",
+            "esri/portal/PortalQueryParams",
+            "esri/layers/FeatureLayer",
+            "esri/Graphic",
+            "esri/geometry/Point",
+            "esri/tasks/Locator",
+            "esri/tasks/RouteTask",
+            "esri/tasks/support/RouteParameters",
+            "esri/tasks/support/FeatureSet",
+            "dojo/domReady!"
+        ], function (array, Portal, PortalItem, OAuthInfo, esriId, PortalQueryParams, FeatureLayer, Graphic,
+            Point, Locator,
+            RouteTask, RouteParameters, FeatureSet) {
+
+            var appId = getUrlVars()["appId"];
+            var layerId = getUrlVars()["layerId"];
+
+            var featureLayer;
+            var foundLocation;
+            var foundAddress;
+            var previousAddress;
+            var previousMileage;
+            var previousLatitude;
+            var previousLongitude;
+            var rideNumber;
+            var rideMileageCount;
+
+            var currentPostalDiv = document.getElementById("currentPostalDiv");
+            var rideNumberDiv = document.getElementById("rideNumberDiv");
+            var rideMileageCountDiv = document.getElementById("rideMileageCountDiv");
+            var endMileage = document.getElementById("endMileage");
+            var btnRegister = document.getElementById("registerMileage");
+            var btnUpdate = document.getElementById("updateAddress");
+            var btnPlus = document.getElementById("plus");
+            var btnMinus = document.getElementById("minus");
+
+            var personalPanelElement = document.getElementById("personalizedPanel");
+            var anonPanelElement = document.getElementById("anonymousPanel");
+            var userIdElement = document.getElementById("userId");
+            var messageDiv = document.getElementById("messageDiv");
+
+            // layerId = //4f4b80d7330a46a3adaf7a342383cede
+            var item = new PortalItem({
+                id: layerId
+            });
+            item.load().then(function (evt) {
+                console.log("PortalItem: ", item);
+                // Load the FeatureLayer
+                // "https://services9.arcgis.com/kfCU77AsgNn9o1Ff/arcgis/rest/services/MileageRegistration/FeatureServer/0"
+                featureLayer = new FeatureLayer(
+                    item.url + "/0"
+                );
+                featureLayer.load().then(function (evt) {
+                    console.log("featureservice loaded: ", evt);
+                    // Get latest mileage reading
+                    console.log("latest mileage reading");
+                    getLastRideInfo();
+                    getRideNumber();
+                });
+                console.log(featureLayer);
+            }).otherwise(function (err) {
+                console.log("Error loading Portal item: ", err);
+            });
+
+            var routeTask = new RouteTask({
+                url: "https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World"
+            });
+
+            var info = new OAuthInfo({
+                // Swap this ID out with registered application ID
+                appId: appId, //"2fLGWPJBamukvZwq",
+                // Uncomment the next line and update if using your own portal
+                // portalUrl: "https://<host>:<port>/arcgis"
+                // Uncomment the next line to prevent the user's signed in state from being shared with other apps on the same domain with the same authNamespace value.
+                // authNamespace: "portal_oauth_inline",
+                popup: false
+            });
+
+            esriId.registerOAuthInfos([info]);
+
+            esriId.checkSignInStatus(info.portalUrl + "/sharing").then(
+                function () {
+                    displaySignedInUI();
+                }
+            ).catch(
+                function () {
+                    // Anonymous view
+                    anonPanelElement.style.display = "block";
+                    personalPanelElement.style.display = "none";
+                }
+            );
+
+            document.getElementById("sign-in").addEventListener("click", function () {
+                // user will be redirected to OAuth Sign In page
+                esriId.getCredential(info.portalUrl + "/sharing");
+            });
+
+            document.getElementById("sign-out").addEventListener("click",
+                function () {
+                    esriId.destroyCredentials();
+                    window.location.reload();
+                });
+
+            function displaySignedInUI() {
+
+                var portal = new Portal();
+                // Setting authMode to immediate signs the user in once loaded
+                portal.authMode = "immediate";
+                // Once loaded, user is signed in
+                portal.load().then(function () {
+                    // Create query parameters for the portal search
+                    var queryParams = new PortalQueryParams({
+                        query: "owner:" + portal.user.username,
+                        sortField: "numViews",
+                        sortOrder: "desc",
+                        num: 20
+                    });
+
+                    userIdElement.innerHTML = portal.user.fullName;
+                    anonPanelElement.style.display = "none";
+                    personalPanelElement.style.display = "block";
+
+                    console.log("token: ", portal.credential.token);
+
+                    // Find address
+                    console.log("find address");
+                    findAddress();
+
+
+
+                    // Query the items based on the queryParams created from portal above
+                    //portal.queryItems(queryParams).then(createGallery);
+                });
+            }
+
+            // function createGallery(items) {
+            //     var htmlFragment = "";
+
+            //     items.results.forEach(function (item) {
+            //         htmlFragment += (
+            //             "<div class=\"esri-item-container\">" +
+            //             (item.thumbnailUrl ?
+            //                 "<div class=\"esri-image\" style=\"background-image:url(" +
+            //                 item.thumbnailUrl + ");\"></div>" :
+            //                 "<div class=\"esri-image esri-null-image\">Thumbnail not available</div>"
+            //             ) +
+            //             (item.title ?
+            //                 "<div class=\"esri-title\">" + (item.title || "") +
+            //                 "</div>" :
+            //                 "<div class=\"esri-title esri-null-title\">Title not available</div>"
+            //             ) +
+            //             "</div>");
+            //     });
+            //     document.getElementById("itemGallery").innerHTML = htmlFragment;
+            // }
+
+
+            function findAddress() {
+                console.time("AddressSearch");
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function (position) {
+                        //console.log("currentLocation: ", position.coords.longitude);
+                        var location = new Point({
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude
+                        });
+
+                        foundLocation = location;
+
+                        var locator = new Locator({
+                            url: "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"
+                        });
+
+                        locator.locationToAddress(location)
+                            .then(function (response) { // Show the address found
+                                console.log("response: ", response);
+                                var address = response.address;
+                                currentPostalDiv.innerHTML = response.attributes.Postal;
+                                foundAddress = address;
+                                console.log("Address found: ", address);
+                                console.timeEnd("AddressSearch");
+                            }, function (err) { // Show no address found
+                                currentPostalDiv.innerHTML = "Geen adres gevonden";
+                                foundAddress = "No address"
+                                console.log("No address found");
+                                console.timeEnd("AddressSearch");
+                            });
+                    });
+                } else {
+                    console.log("Geolocation is not supported by this browser.");
+                }
+            }
+
+            // Empty the endMileage input if the user wants to put in a new value
+            endMileage.addEventListener("focus", function (evt) {
+                endMileage.value = "";
+            });
+
+            // Register mileage
+            btnRegister.addEventListener("click", function (evt) {
+                console.log("btnRegister clicked: ", endMileage.value);
+
+                editFeature = new Graphic({
+                    geometry: foundLocation,
+                    attributes: {
+                        "KmEind": endMileage.value,
+                        "Naar": foundAddress,
+                        "Prive": 0,
+                    }
+                });
+
+                // Setup the applyEdits parameter with adds.
+                const edits = {
+                    addFeatures: [editFeature]
+                };
+                applyEditsToMileageRegistration(edits);
+
+            });
+
+            // Update address
+            btnUpdate.addEventListener("click", function (evt) {
+                console.log("btnUpdate clicked");
+                findAddress();
+            });
+
+            // Add one to endMileage
+            btnPlus.addEventListener("click", function (evt) {
+                console.log("btnPlus clicked");
+                endMileage.value = parseInt(endMileage.value) + 1;
+            });
+
+            // Subtract one from endMileage
+            btnMinus.addEventListener("click", function (evt) {
+                console.log("btnMinus clicked");
+                endMileage.value = parseInt(endMileage.value) - 1;
+            });
+
+
+            // Get latest mileage reading
+            function getLastRideInfo() {
+                var query = featureLayer.createQuery();
+                query.outFields = "*";
+                query.orderByFields = "KmEind DESC";
+                query.num = 1;
+                featureLayer.queryFeatures(query).then(function (response) {
+                    var features = response.features;
+                    array.forEach(features, function (feature) {
+                        console.table(feature.attributes);
+                        previousMileage = feature.attributes["KmEind"];
+                        previousAddress = feature.attributes["Naar"];
+                        previousLatitude = feature.attributes["Latitude"];
+                        previousLongitude = feature.attributes["Longitude"];
+                    });
+                    getRoute();
+                })
+
+            }
+
+            // Get ride number
+            function getRideNumber() {
+                var query = featureLayer.createQuery();
+                var today = new Date().toLocaleDateString('en-US', {
+                    month: '2-digit',
+                    day: '2-digit',
+                    year: 'numeric'
+                });
+                query.outFields = "Ritnummer";
+                query.where = "Datum > Date '" + today + " 00:00:00'";
+                featureLayer.queryFeatureCount(query).then(function (response) {
+                    rideNumber = response + 1;
+                    rideNumberDiv.innerHTML = rideNumber;
+                    console.log("Ritnummer: ", rideNumber);
+                })
+            }
+
+            function getRoute() {
+                if (messageDiv.style.display === "none") {
+                    messageDiv.innerHTML = "Route berekenen...";
+                    messageDiv.style.display = "block"
+                }
+
+                // Setup the route parameters
+                var routeParams = new RouteParameters({
+                    directionsLengthUnits: "kilometers",
+                    stops: new FeatureSet({
+                        features: [
+                            new Graphic({
+                                geometry: new Point({
+                                    latitude: previousLatitude,
+                                    longitude: previousLongitude
+                                })
+                            }),
+                            new Graphic({
+                                geometry: foundLocation
+                            })
+                        ]
+                    }),
+                    returnDirections: true
+                });
+                // Get the route
+                routeTask.solve(routeParams).then(function (data) {
+                    data.routeResults.forEach(function (routeResults) {
+                        rideMileageCount = Math.round(routeResults.directions.totalLength);
+                        rideMileageCountDiv.innerHTML = rideMileageCount;
+                        endMileage.value = previousMileage + rideMileageCount;
+                        messageDiv.innerHTML = "";
+                        messageDiv.style.display = "none";
+                        console.log("rideMileageCount: ", routeResults.directions.totalLength);
+                    });
+                }).otherwise(function (err) {
+                    console.log(err);
+                    rideMileageCountDiv.innerHTML = "";
+                    messageDiv.innerHTML = "Fout bij berekenen route!"
+                });
+            }
+
+            // Call FeatureLayer.applyEdits() with specified params.
+            function applyEditsToMileageRegistration(params) {
+                // unselectFeature();
+                featureLayer.applyEdits(params).then(function (editsResult) {
+                        console.log("editsResult: ", editsResult);
+                        // Get the objectId of the newly added feature.
+                        // Call selectFeature function to highlight the new feature.
+                        let objectId;
+                        if (editsResult.addFeatureResults.length > 0) {
+                            objectId = editsResult.addFeatureResults[0].objectId;
+                            if (messageDiv.style.display === "none") {
+                                messageDiv.innerHTML = "Kilometerstand opgeslagen!"
+                                messageDiv.style.display = "block"
+                            }
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log("===============================================");
+                        console.error("[ applyEdits ] FAILURE: ", error.code, error.name,
+                            error.message);
+                        console.log("error = ", error);
+                    });
+            }
+
+            function getUrlVars() {
+                var vars = {};
+                var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
+                    vars[key] = value;
+                });
+                return vars;
+            }
+        });
+    </script>
+</head>
+
+<body>
+    <div id="anonymousPanel" style="display: none; padding: 5px; text-align: center;">
+        <span id="sign-in" class="action">Sign In</span> and view your ArcGIS Online items.
+    </div>
+
+    <div id="personalizedPanel" style="display: none; padding: 5px; text-align: center;">
+        Welkom
+        <span id="userId" style="font-weight: bold;"></span> &nbsp;-&nbsp;
+        <span id="sign-out" class="action">Sign Out</span>
+        <div id="currentPostalDiv" class="calculatedValues"></div>
+        <div id="rideNumberDiv" class="calculatedValues"></div>
+        <div id="rideMileageCountDiv" class="calculatedValues"></div>
+        <input type="number" id="endMileage" />
+        <br/>
+        <button id="registerMileage"></button>
+        <button id="updateAddress"></button>
+        <button id="plus"></button>
+        <button id="minus"></button>
+    </div>
+
+    <div id="messageDiv" style="display: none; padding: 5px; text-align: center;"></div>
+
+    <!-- <div id="itemGallery" class="esri-item-gallery" style="width: 100%;"></div> -->
+</body>
+
+</html>
