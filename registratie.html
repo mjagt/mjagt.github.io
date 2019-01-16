@@ -140,7 +140,6 @@
             var layerId = getUrlVars()["layerId"];
 
             var featureLayer;
-            var today;
             var foundLocation;
             var foundAddress;
             var previousAddress;
@@ -325,11 +324,20 @@
             btnRegister.addEventListener("click", function (evt) {
                 console.log("btnRegister clicked: ", endMileage.value);
 
+                var now = new Date().toLocaleDateString('en-US', {
+                    month: '2-digit',
+                    day: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+
                 editFeature = new Graphic({
                     geometry: foundLocation,
                     attributes: {
                         "Ritnummer": rideNumber,
-                        "Datum": today,
+                        "Datum": now,
                         "KmStart": previousMileage,
                         "KmEind": endMileage.value,
                         "Van": previousAddress,
@@ -392,16 +400,13 @@
             // Get ride number
             function getRideNumber() {
                 var query = featureLayer.createQuery();
-                today = new Date().toLocaleDateString('en-US', {
+                var today = new Date().toLocaleDateString('en-US', {
                     month: '2-digit',
                     day: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
+                    year: 'numeric'
                 });
                 query.outFields = "Ritnummer";
-                query.where = "Datum > Date '" + today + "'";
+                query.where = "Datum > Date '" + today + " 00:00:00'";
                 featureLayer.queryFeatureCount(query).then(function (response) {
                     rideNumber = response + 1;
                     rideNumberDiv.innerHTML = rideNumber;
