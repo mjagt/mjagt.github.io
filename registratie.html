@@ -444,7 +444,7 @@
                         console.log("rideMileageCount: ", routeResults.directions.totalLength);
                     });
                 }).otherwise(function (err) {
-                    console.log(err);
+                    console.log("RouteTask error: ", err);
                     rideMileageCountDiv.innerHTML = "";
                     messageDiv.innerHTML = "Fout bij berekenen route!"
                 });
