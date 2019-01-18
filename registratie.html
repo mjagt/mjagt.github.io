@@ -42,7 +42,7 @@
 
         input {
             width: 316px;
-            height: 64px;
+            height: 54px;
             font-size: 38px;
             color: white;
             padding: 5px;
@@ -74,17 +74,23 @@
             /* box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); */
         }
 
+        #detourKilometers {
+            width: 110px;
+            float: left;
+        }
+
         #chkBxPrivate {
             width: 64px;
             height: 64px;
             float: left;
+            margin-top: 10px;
         }
 
         #privateText {
             font-size: 38px;
             float: left;
             margin-left: 15px;
-            margin-top: 15px;
+            margin-top: 20px;
         }
 
         #remarks {
@@ -92,7 +98,7 @@
             text-align: left;
         }
 
-        #remarks::placeholder {
+        #remarks::placeholder, #detourKilometers::placeholder {
             color: #ababab;
             opacity: 1;
         }
@@ -106,12 +112,12 @@
             padding: 5px;
         }
 
-        #registerMileage {
+        #save {
             background-image: url("images/save.png");
             background-size: 70%;
         }
 
-        #updateAddress {
+        #update {
             background-image: url("images/restart.png");
             background-size: 70%;
         }
@@ -243,18 +249,21 @@
             var foundLocation;
             var foundAddress;
             var previousAddress;
-            var previousMileage;
+            var previousKilometers;
             var previousLatitude;
             var previousLongitude;
             var rideNumber;
-            var rideMileageCount;
+            var rideKilometersCount;
 
             var currentAddressDiv = document.getElementById("currentAddressDiv");
             var rideNumberDiv = document.getElementById("rideNumberDiv");
-            var rideMileageCountDiv = document.getElementById("rideMileageCountDiv");
-            var endMileage = document.getElementById("endMileage");
-            var btnRegister = document.getElementById("registerMileage");
-            var btnUpdate = document.getElementById("updateAddress");
+            // var rideKilometersCountDiv = document.getElementById("rideKilometersCountDiv");
+            var detourKilometers = document.getElementById("detourKilometers");
+            var chkBxPrivate = document.getElementById("chkBxPrivate");
+            var remarks = document.getElementById("remarks");
+            var endKilometers = document.getElementById("endKilometers");
+            var btnSave = document.getElementById("save");
+            var btnUpdate = document.getElementById("update");
             var btnPlus = document.getElementById("plus");
             var btnMinus = document.getElementById("minus");
 
@@ -276,8 +285,8 @@
                 );
                 featureLayer.load().then(function (evt) {
                     console.log("featureservice loaded: ", evt);
-                    // Get latest mileage reading
-                    console.log("latest mileage reading");
+                    // Get latest Kilometers reading
+                    console.log("latest Kilometers reading");
                     getLastRideInfo();
                     getRideNumber();
                 });
@@ -393,14 +402,14 @@
                 }
             }
 
-            // Empty the endMileage input if the user wants to put in a new value
-            endMileage.addEventListener("focus", function (evt) {
-                endMileage.value = "";
+            // Empty the endKilometers input if the user wants to put in a new value
+            endKilometers.addEventListener("focus", function (evt) {
+                endKilometers.value = "";
             });
 
-            // Register mileage
-            btnRegister.addEventListener("click", function (evt) {
-                console.log("btnRegister clicked: ", endMileage.value);
+            // Register Kilometers
+            btnSave.addEventListener("click", function (evt) {
+                console.log("btnSave clicked: ", endKilometers.value);
 
                 var now = new Date().toLocaleDateString('en-US', {
                     month: '2-digit',
@@ -416,12 +425,14 @@
                     attributes: {
                         "Ritnummer": rideNumber,
                         "Datum": now,
-                        "KmStart": previousMileage,
-                        "KmEind": endMileage.value,
+                        "KmStart": previousKilometers,
+                        "KmEind": parseInt(endKilometers.value),
                         "Van": previousAddress,
                         "Naar": foundAddress,
-                        "Prive": 0,
-                        "RitKm": parseInt(endMileage.value) - previousMileage,
+                        "Prive": chkBxPrivate.checked ? 1 : 0,
+                        "OmrijKm": detourKilometers.value == "" ? 0 : parseInt(detourKilometers.value),
+                        "RitKm": parseInt(endKilometers.value) - previousKilometers,
+                        "Opmerking": remarks.value,
                         "Latitude": foundLocation.latitude,
                         "Longitude": foundLocation.longitude
                     }
@@ -431,31 +442,31 @@
                 const edits = {
                     addFeatures: [editFeature]
                 };
-                applyEditsToMileageRegistration(edits);
+                applyEditsToKilometersRegistration(edits);
 
             });
 
-            // Update address
+            // Update address and endKilometers
             btnUpdate.addEventListener("click", function (evt) {
                 console.log("btnUpdate clicked");
                 findAddress();
                 getRoute();
             });
 
-            // Add one to endMileage
+            // Add one to endKilometers
             btnPlus.addEventListener("click", function (evt) {
                 console.log("btnPlus clicked");
-                endMileage.value = parseInt(endMileage.value) + 1;
+                endKilometers.value = parseInt(endKilometers.value) + 1;
             });
 
-            // Subtract one from endMileage
+            // Subtract one from endKilometers
             btnMinus.addEventListener("click", function (evt) {
                 console.log("btnMinus clicked");
-                endMileage.value = parseInt(endMileage.value) - 1;
+                endKilometers.value = parseInt(endKilometers.value) - 1;
             });
 
 
-            // Get latest mileage reading
+            // Get latest Kilometers reading
             function getLastRideInfo() {
                 var query = featureLayer.createQuery();
                 query.outFields = "*";
@@ -465,7 +476,7 @@
                     var features = response.features;
                     array.forEach(features, function (feature) {
                         console.table(feature.attributes);
-                        previousMileage = feature.attributes["KmEind"];
+                        previousKilometers = feature.attributes["KmEind"];
                         previousAddress = feature.attributes["Naar"];
                         previousLatitude = feature.attributes["Latitude"];
                         previousLongitude = feature.attributes["Longitude"];
@@ -519,21 +530,21 @@
                 // Get the route
                 routeTask.solve(routeParams).then(function (data) {
                     data.routeResults.forEach(function (routeResults) {
-                        rideMileageCount = Math.round(routeResults.directions.totalLength);
-                        endMileage.value = previousMileage + rideMileageCount;
+                        rideKilometersCount = Math.round(routeResults.directions.totalLength);
+                        endKilometers.value = previousKilometers + rideKilometersCount;
                         messageDiv.innerHTML = "";
                         messageDiv.style.display = "none";
-                        console.log("rideMileageCount: ", routeResults.directions.totalLength);
+                        console.log("rideKilometersCount: ", routeResults.directions.totalLength);
                     });
                 }).otherwise(function (err) {
                     console.log("RouteTask error: ", err);
-                    rideMileageCountDiv.innerHTML = "";
+                    rideKilometersCountDiv.innerHTML = "";
                     messageDiv.innerHTML = "Fout bij berekenen route!"
                 });
             }
 
             // Call FeatureLayer.applyEdits() with specified params.
-            function applyEditsToMileageRegistration(params) {
+            function applyEditsToKilometersRegistration(params) {
                 // unselectFeature();
                 featureLayer.applyEdits(params).then(function (editsResult) {
                         console.log("editsResult: ", editsResult);
@@ -569,7 +580,7 @@
 
 <body>
     <div id="anonymousPanel" style="display: none; padding: 5px; text-align: center;">
-        <span id="sign-in" class="action">Sign In</span> and view your ArcGIS Online items.
+        <span id="sign-in" class="action">Log In</span> om kilometers te registreren.
     </div>
 
     <div id="personalizedPanel" style="display: none; padding: 5px; text-align: center; width: 326px;" class="centered">
@@ -613,7 +624,7 @@
                 <div class="calculatedValues">
                     <image src="images/plus-2-icon-19-64.png" style="width: 23px; height: 23px;" />
                 </div>
-                <div id="rideMileageCountDiv" class="calculatedValues" style="width: calc(100% - 23px);"></div>
+                <div id="rideKilometersCountDiv" class="calculatedValues" style="width: calc(100% - 23px);"></div>
 
             </div>
             <div>
@@ -622,18 +633,19 @@
             </div> -->
         </div>
         <div>
+            <input type="number" id="detourKilometers" placeholder="km om" />
             <input type="checkbox" id="chkBxPrivate" value="prive" />
-            <span id="privateText">Priverit</span>
+            <span id="privateText">Prive</span>
         </div>
         <div>
-            <input type="text" id="remarks" placeholder="Opmerkingen" />
+            <input type="text" id="remarks" placeholder="opmerking" />
         </div>
         <div>
-            <input type="number" id="endMileage" />
+            <input type="number" id="endKilometers" />
         </div>
         <div id="buttonDiv">
-            <button id="registerMileage"></button>
-            <button id="updateAddress"></button>
+            <button id="save"></button>
+            <button id="update"></button>
             <button id="plus"></button>
             <button id="minus"></button>
         </div>
