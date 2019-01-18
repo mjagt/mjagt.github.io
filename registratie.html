@@ -29,6 +29,17 @@
             transform: scale(1.1, 1.1);
         } */
 
+        .centered {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            -webkit-transform: translate(-50%, -50%);
+            -moz-transform: translate(-50%, -50%);
+            -o-transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+        }
+
         input {
             width: 316px;
             height: 64px;
@@ -39,6 +50,8 @@
             border: 5px solid white;
             border-radius: 15px;
             text-align: right;
+            box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            margin: 5px;
         }
 
         button {
@@ -50,9 +63,37 @@
             border: none;
             border-radius: 15px;
             cursor: pointer;
+            /* padding: 10px; */
+            margin: 6px;
+            box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        }
+
+        .smallImage {
+            width: 23px;
+            height: 23px;
+            /* box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); */
+        }
+
+        #chkBxPrivate {
+            width: 64px;
+            height: 64px;
+            float: left;
+        }
+
+        #privateText {
+            font-size: 38px;
+            float: left;
+            margin-left: 15px;
+            margin-top: 15px;
+        }
+
+        #previousValuesDiv {
+            width: 100%;
+        }
+
+        #buttonDiv {
+            width: 100%;
             padding: 5px;
-            margin: 5px;
-            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
         }
 
         #registerMileage {
@@ -114,6 +155,55 @@
 
         .calculatedValues {
             text-align: left;
+            color: black;
+        }
+
+        .divTable {
+            display: table;
+            width: 100%;
+        }
+
+        .divTableRow {
+            display: table-row;
+        }
+
+        .divTableHeading {
+            /* background-color: #EEE; */
+            display: table-header-group;
+        }
+
+        .divTableCell,
+        .smallCell,
+        .wideCell,
+        .divTableHead {
+            border: none;
+            display: table-cell;
+            padding: 2px;
+            font-weight: bold;
+        }
+
+        .smallCell {
+            width: 30px;
+        }
+
+        .wideCell {
+            width: calc(100% - 30px);
+        }
+
+        .divTableHeading {
+            /* background-color: #EEE; */
+            display: table-header-group;
+            font-weight: bold;
+        }
+
+        .divTableFoot {
+            /* background-color: #EEE; */
+            display: table-footer-group;
+            font-weight: bold;
+        }
+
+        .divTableBody {
+            display: table-row-group;
         }
     </style>
     <script>
@@ -149,7 +239,7 @@
             var rideNumber;
             var rideMileageCount;
 
-            var currentPostalDiv = document.getElementById("currentPostalDiv");
+            var currentAddressDiv = document.getElementById("currentAddressDiv");
             var rideNumberDiv = document.getElementById("rideNumberDiv");
             var rideMileageCountDiv = document.getElementById("rideMileageCountDiv");
             var endMileage = document.getElementById("endMileage");
@@ -299,12 +389,12 @@
                             .then(function (response) { // Show the address found
                                 console.log("response: ", response);
                                 var address = response.address;
-                                currentPostalDiv.innerHTML = response.attributes.Postal;
+                                currentAddressDiv.innerHTML = response.attributes.Match_addr;
                                 foundAddress = address;
                                 console.log("Address found: ", address);
                                 console.timeEnd("AddressSearch");
                             }, function (err) { // Show no address found
-                                currentPostalDiv.innerHTML = "Geen adres gevonden";
+                                currentAddressDiv.innerHTML = "Geen adres gevonden";
                                 foundAddress = "No address"
                                 console.log("No address found");
                                 console.timeEnd("AddressSearch");
@@ -392,7 +482,7 @@
                         previousLatitude = feature.attributes["Latitude"];
                         previousLongitude = feature.attributes["Longitude"];
                     });
-                    getRoute();
+                    //***getRoute();
                 })
 
             }
@@ -495,19 +585,73 @@
         <span id="sign-in" class="action">Sign In</span> and view your ArcGIS Online items.
     </div>
 
-    <div id="personalizedPanel" style="display: none; padding: 5px; text-align: center; width: 316px;">
-        Welkom
+    <div id="personalizedPanel" style="display: none; padding: 5px; text-align: center; width: 326px;" class="centered">
+        Ingelogd:
         <span id="userId" style="font-weight: bold;"></span> &nbsp;-&nbsp;
-        <span id="sign-out" class="action">Sign Out</span>
-        <div id="currentPostalDiv" class="calculatedValues"></div>
-        <div id="rideNumberDiv" class="calculatedValues"></div>
-        <div id="rideMileageCountDiv" class="calculatedValues"></div>
-        <input type="number" id="endMileage" />
-        <br/>
-        <button id="registerMileage"></button>
-        <button id="updateAddress"></button>
-        <button id="plus"></button>
-        <button id="minus"></button>
+        <span id="sign-out" class="action">Uitloggen</span>
+        <div id="previousValuesDiv">
+            <div class="divTable">
+                <div class="divTableBody">
+                    <div class="divTableRow">
+                        <div class="smallCell">
+                            <image src="images/marker-icon-128-black.png" class="smallImage" />
+                        </div>
+                        <div class="wideCell">
+                            <div id="currentAddressDiv" class="calculatedValues"></div>
+                        </div>
+                    </div>
+                    <div class="divTableRow">
+                        <div class="smallCell">
+                            <image src="images/car-icon-128-black.png" class="smallImage" />
+                        </div>
+                        <div class="wideCell">
+                            <div id="rideNumberDiv" class="calculatedValues"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- <div>
+                <div class="calculatedValues">
+                    <image src="images/plus-2-icon-19-64.png" style="width: 23px; height: 23px" />
+                </div>
+                <div id="currentAddressDiv" class="calculatedValues" style="width: calc(100% - 23px);"></div>
+            </div>
+            <div>
+                <div class="calculatedValues">
+                    <image src="images/plus-2-icon-19-64.png" style="width: 23px; height: 23px" />
+                </div>
+                <div id="rideNumberDiv" class="calculatedValues" style="width: calc(100% - 23px);"></div>
+            </div>
+            <div>
+                <div class="calculatedValues">
+                    <image src="images/plus-2-icon-19-64.png" style="width: 23px; height: 23px;" />
+                </div>
+                <div id="rideMileageCountDiv" class="calculatedValues" style="width: calc(100% - 23px);"></div>
+
+            </div>
+            <div>
+                <div style="width: 20px; height: 20px; background: yellow; float: left;"></div>
+                <div style="width: 20px; height: 20px; background: grey; float: left;"></div>
+            </div> -->
+        </div>
+        <div>
+            <input type="checkbox" id="chkBxPrivate" value="prive" />
+            <span id="privateText">Priverit</span>
+        </div>
+        <div>
+            <input type="text" id="remarks" />
+        </div>
+        <div>
+            <input type="number" id="endMileage" />
+        </div>
+        <div id="buttonDiv">
+            <button id="registerMileage"></button>
+            <button id="updateAddress"></button>
+            <button id="plus"></button>
+            <button id="minus"></button>
+        </div>
+
+
     </div>
 
     <div id="messageDiv" style="display: none; padding: 5px; text-align: center;"></div>
