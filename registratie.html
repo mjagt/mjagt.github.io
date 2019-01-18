@@ -87,6 +87,16 @@
             margin-top: 15px;
         }
 
+        #remarks {
+            color: white;
+            text-align: left;
+        }
+
+        #remarks::placeholder {
+            color: #ababab;
+            opacity: 1;
+        }
+
         #previousValuesDiv {
             width: 100%;
         }
@@ -347,28 +357,6 @@
                 });
             }
 
-            // function createGallery(items) {
-            //     var htmlFragment = "";
-
-            //     items.results.forEach(function (item) {
-            //         htmlFragment += (
-            //             "<div class=\"esri-item-container\">" +
-            //             (item.thumbnailUrl ?
-            //                 "<div class=\"esri-image\" style=\"background-image:url(" +
-            //                 item.thumbnailUrl + ");\"></div>" :
-            //                 "<div class=\"esri-image esri-null-image\">Thumbnail not available</div>"
-            //             ) +
-            //             (item.title ?
-            //                 "<div class=\"esri-title\">" + (item.title || "") +
-            //                 "</div>" :
-            //                 "<div class=\"esri-title esri-null-title\">Title not available</div>"
-            //             ) +
-            //             "</div>");
-            //     });
-            //     document.getElementById("itemGallery").innerHTML = htmlFragment;
-            // }
-
-
             function findAddress() {
                 console.time("AddressSearch");
                 if (navigator.geolocation) {
@@ -482,7 +470,7 @@
                         previousLatitude = feature.attributes["Latitude"];
                         previousLongitude = feature.attributes["Longitude"];
                     });
-                    //***getRoute();
+                    getRoute();
                 })
 
             }
@@ -532,7 +520,6 @@
                 routeTask.solve(routeParams).then(function (data) {
                     data.routeResults.forEach(function (routeResults) {
                         rideMileageCount = Math.round(routeResults.directions.totalLength);
-                        rideMileageCountDiv.innerHTML = rideMileageCount;
                         endMileage.value = previousMileage + rideMileageCount;
                         messageDiv.innerHTML = "";
                         messageDiv.style.display = "none";
@@ -639,7 +626,7 @@
             <span id="privateText">Priverit</span>
         </div>
         <div>
-            <input type="text" id="remarks" />
+            <input type="text" id="remarks" placeholder="Opmerkingen" />
         </div>
         <div>
             <input type="number" id="endMileage" />
