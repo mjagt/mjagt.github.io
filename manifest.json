@@ -1,0 +1,20 @@
+{
+    "short_name": "Km",
+    "name": "Kilometer registratie",
+    "icons": [
+      {
+        "src": "/images/road-icon-128.png",
+        "type": "image/png",
+        "sizes": "128x128"
+      },
+      {
+        "src": "/images/road-icon-512.png",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ],
+    "start_url": "registratie.html?appId=2fLGWPJBamukvZwq&layerId=4f4b80d7330a46a3adaf7a342383cede",
+    "background_color": "#3367D6",
+    "display": "standalone",
+    "theme_color": "#ffbb00"
+  }
