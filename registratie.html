@@ -258,6 +258,7 @@
             var rideNumber;
             var rideKilometersCount;
 
+            var markerIcon = document.getElementById("markerIcon");
             var currentAddressDiv = document.getElementById("currentAddressDiv");
             var rideNumberDiv = document.getElementById("rideNumberDiv");
             // var rideKilometersCountDiv = document.getElementById("rideKilometersCountDiv");
@@ -424,6 +425,7 @@
                                     var address = feature.attributes["Address"];
                                     foundLocation.latitude = feature.attributes["Latitude"];
                                     foundLocation.longitude = feature.attributes["Longitude"];
+                                    markerIcon.src = "images/marker-icon-128-green.png";
                                     currentAddressDiv.innerHTML = address;
                                     foundAddress = address;
                                     console.log("Address found: ", address);
@@ -647,7 +649,7 @@
                 <div class="divTableBody">
                     <div class="divTableRow">
                         <div class="smallCell">
-                            <image src="images/marker-icon-128-black.png" class="smallImage" />
+                            <image id="markerIcon" src="images/marker-icon-128-black.png" class="smallImage" />
                         </div>
                         <div class="wideCell">
                             <div id="currentAddressDiv" class="calculatedValues"></div>
