@@ -245,7 +245,8 @@
             RouteTask, RouteParameters, FeatureSet) {
 
             var appId = getUrlVars()["appId"];
-            var layerId = getUrlVars()["layerId"];
+            var registrationItemId = getUrlVars()["registrationItemId"];
+            var knownLocationsItemId = getUrlVars()["knownLocationsItemId"];
 
             var featureLayer;
             var foundLocation;
@@ -274,27 +275,50 @@
             var userIdElement = document.getElementById("userId");
             var messageDiv = document.getElementById("messageDiv");
 
-            // layerId = //4f4b80d7330a46a3adaf7a342383cede
-            var item = new PortalItem({
-                id: layerId
+            // registrationLayerId = //4f4b80d7330a46a3adaf7a342383cede
+            var registrationItem = new PortalItem({
+                id: registrationItemId
             });
-            item.load().then(function (evt) {
-                console.log("PortalItem: ", item);
+            registrationItem.load().then(function (evt) {
+                console.log("registrationItem: ", registrationItem);
                 // Load the FeatureLayer
                 // "https://services9.arcgis.com/kfCU77AsgNn9o1Ff/arcgis/rest/services/MileageRegistration/FeatureServer/0"
-                featureLayer = new FeatureLayer(
-                    item.url + "/0"
+                registrationLayer = new FeatureLayer(
+                    registrationItem.url + "/0"
                 );
-                featureLayer.load().then(function (evt) {
-                    console.log("featureservice loaded: ", evt);
+                registrationLayer.load().then(function (evt) {
+                    console.log("registrationLayer loaded: ", evt);
                     // Get latest Kilometers reading
                     console.log("latest Kilometers reading");
                     getLastRideInfo();
                     getRideNumber();
                 });
-                console.log(featureLayer);
+                console.log("registrationLayer loaded: ", registrationLayer);
             }).otherwise(function (err) {
-                console.log("Error loading Portal item: ", err);
+                console.log("Error loading registrationLayer Portal item: ", err);
+            });
+
+            // knownLocationsLayerId = //b3f5ad9b532b495793d22eacc6d0bc09
+            var knownLocationsItem = new PortalItem({
+                id: knownLocationsItemId
+            });
+            knownLocationsItem.load().then(function (evt) {
+                console.log("knownLocationsItem: ", knownLocationsItem);
+                // Load the FeatureLayer
+                // "https://services9.arcgis.com/kfCU77AsgNn9o1Ff/ArcGIS/rest/services/Mileage_Registration_Known_Location_Buffers/FeatureServer/0"
+                knownLocationsLayer = new FeatureLayer(
+                    knownLocationsItem.url + "/0"
+                );
+                // knownLocationsLayer.load().then(function (evt) {
+                //     console.log("knownLocationsLayer loaded: ", evt);
+                //     // Get latest Kilometers reading
+                //     console.log("latest Kilometers reading");
+                //     getLastRideInfo();
+                //     getRideNumber();
+                // });
+                console.log("knownLocationsLayer loaded: ", knownLocationsLayer);
+            }).otherwise(function (err) {
+                console.log("Error loading knownLocationsLayer Portal item: ", err);
             });
 
             var routeTask = new RouteTask({
@@ -380,24 +404,53 @@
 
                         foundLocation = location;
 
-                        var locator = new Locator({
-                            url: "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"
-                        });
+                        // check if the current location intersects with a known location buffer
+                        //queryFeatureLayer(location, "intersects")
+                        var query = {
+                            geometry: location,
+                            //distance: distance,
+                            spatialRelationship: "intersects",
+                            outFields: ["*"],
+                            returnGeometry: true,
+                            num: 1
+                            //where: sqlExpression
+                        };
+                        knownLocationsLayer.queryFeatures(query).then(function(result) {
+                            if(result.features.length > 0) {
+                                // get the address of the hit area
+                                var features = result.features;
+                                array.forEach(features, function (feature) {
+                                    console.table(feature.attributes);
+                                    var address = feature.attributes["Address"];
+                                    foundLocation.latitude = feature.attributes["Latitude"];
+                                    foundLocation.longitude = feature.attributes["Longitude"];
+                                    currentAddressDiv.innerHTML = address;
+                                    foundAddress = address;
+                                    console.log("Address found: ", address);
+                                    console.timeEnd("AddressSearch");
+                                });
+                            } else {
+                                // get the address using the Esri Geocode Service
+                                var locator = new Locator({
+                                    url: "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"
+                                });
 
-                        locator.locationToAddress(location)
-                            .then(function (response) { // Show the address found
-                                console.log("response: ", response);
-                                var address = response.address;
-                                currentAddressDiv.innerHTML = response.attributes.Match_addr;
-                                foundAddress = address;
-                                console.log("Address found: ", address);
-                                console.timeEnd("AddressSearch");
-                            }, function (err) { // Show no address found
-                                currentAddressDiv.innerHTML = "Geen adres gevonden";
-                                foundAddress = "No address"
-                                console.log("No address found");
-                                console.timeEnd("AddressSearch");
-                            });
+                                locator.locationToAddress(location)
+                                    .then(function (response) { // Show the address found
+                                        console.log("response: ", response);
+                                        var address = response.address;
+                                        currentAddressDiv.innerHTML = response.attributes.Match_addr;
+                                        foundAddress = address;
+                                        console.log("Address found: ", address);
+                                        console.timeEnd("AddressSearch");
+                                    }, function (err) { // Show no address found
+                                        currentAddressDiv.innerHTML = "Geen adres gevonden";
+                                        foundAddress = "No address"
+                                        console.log("No address found");
+                                        console.timeEnd("AddressSearch");
+                                    });
+                            }
+                        });
                     });
                 } else {
                     console.log("Geolocation is not supported by this browser.");
@@ -470,11 +523,11 @@
 
             // Get latest Kilometers reading
             function getLastRideInfo() {
-                var query = featureLayer.createQuery();
+                var query = registrationLayer.createQuery();
                 query.outFields = "*";
                 query.orderByFields = "KmEind DESC";
                 query.num = 1;
-                featureLayer.queryFeatures(query).then(function (response) {
+                registrationLayer.queryFeatures(query).then(function (response) {
                     var features = response.features;
                     array.forEach(features, function (feature) {
                         console.table(feature.attributes);
@@ -490,7 +543,7 @@
 
             // Get ride number
             function getRideNumber() {
-                var query = featureLayer.createQuery();
+                var query = registrationLayer.createQuery();
                 var today = new Date().toLocaleDateString('en-US', {
                     month: '2-digit',
                     day: '2-digit',
@@ -498,7 +551,7 @@
                 });
                 query.outFields = "Ritnummer";
                 query.where = "Datum > Date '" + today + " 00:00:00'";
-                featureLayer.queryFeatureCount(query).then(function (response) {
+                registrationLayer.queryFeatureCount(query).then(function (response) {
                     rideNumber = response + 1;
                     rideNumberDiv.innerHTML = "Ritnummer " + rideNumber;
                     console.log("Ritnummer: ", rideNumber);
@@ -548,7 +601,7 @@
             // Call FeatureLayer.applyEdits() with specified params.
             function applyEditsToKilometersRegistration(params) {
                 // unselectFeature();
-                featureLayer.applyEdits(params).then(function (editsResult) {
+                registrationLayer.applyEdits(params).then(function (editsResult) {
                         console.log("editsResult: ", editsResult);
                         // Get the objectId of the newly added feature.
                         // Call selectFeature function to highlight the new feature.
