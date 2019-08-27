@@ -276,52 +276,6 @@
             var userIdElement = document.getElementById("userId");
             var messageDiv = document.getElementById("messageDiv");
 
-            // registrationLayerId = //4f4b80d7330a46a3adaf7a342383cede
-            var registrationItem = new PortalItem({
-                id: registrationItemId
-            });
-            registrationItem.load().then(function (evt) {
-                console.log("registrationItem: ", registrationItem);
-                // Load the FeatureLayer
-                // "https://services9.arcgis.com/kfCU77AsgNn9o1Ff/arcgis/rest/services/MileageRegistration/FeatureServer/0"
-                registrationLayer = new FeatureLayer(
-                    registrationItem.url + "/0"
-                );
-                registrationLayer.load().then(function (evt) {
-                    console.log("registrationLayer loaded: ", evt);
-                    // Get latest Kilometers reading
-                    console.log("latest Kilometers reading");
-                    getLastRideInfo();
-                    getRideNumber();
-                });
-                console.log("registrationLayer loaded: ", registrationLayer);
-            }).otherwise(function (err) {
-                console.log("Error loading registrationLayer Portal item: ", err);
-            });
-
-            // knownLocationsLayerId = //b3f5ad9b532b495793d22eacc6d0bc09
-            var knownLocationsItem = new PortalItem({
-                id: knownLocationsItemId
-            });
-            knownLocationsItem.load().then(function (evt) {
-                console.log("knownLocationsItem: ", knownLocationsItem);
-                // Load the FeatureLayer
-                // "https://services9.arcgis.com/kfCU77AsgNn9o1Ff/ArcGIS/rest/services/Mileage_Registration_Known_Location_Buffers/FeatureServer/0"
-                knownLocationsLayer = new FeatureLayer(
-                    knownLocationsItem.url + "/0"
-                );
-                // knownLocationsLayer.load().then(function (evt) {
-                //     console.log("knownLocationsLayer loaded: ", evt);
-                //     // Get latest Kilometers reading
-                //     console.log("latest Kilometers reading");
-                //     getLastRideInfo();
-                //     getRideNumber();
-                // });
-                console.log("knownLocationsLayer loaded: ", knownLocationsLayer);
-            }).otherwise(function (err) {
-                console.log("Error loading knownLocationsLayer Portal item: ", err);
-            });
-
             var routeTask = new RouteTask({
                 url: "https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World"
             });
@@ -382,14 +336,58 @@
 
                     console.log("token: ", portal.credential.token);
 
-                    // Find address
-                    console.log("find address");
-                    findAddress();
-
-
-
+                    // Load the layers
+                    console.log("start loading layers...");
+                    loadRegistrationLayer();
                     // Query the items based on the queryParams created from portal above
                     //portal.queryItems(queryParams).then(createGallery);
+                });
+            }
+
+            function loadRegistrationLayer() {
+                // registrationLayerId = //4f4b80d7330a46a3adaf7a342383cede
+                var registrationItem = new PortalItem({
+                    id: registrationItemId
+                });
+                registrationItem.load().then(function (evt) {
+                    console.log("registrationItem: ", registrationItem);
+                    // Load the FeatureLayer
+                    // "https://services9.arcgis.com/kfCU77AsgNn9o1Ff/arcgis/rest/services/MileageRegistration/FeatureServer/0"
+                    registrationLayer = new FeatureLayer(
+                        registrationItem.url + "/0"
+                    );
+                    registrationLayer.load().then(function (evt) {
+                        console.log("registrationLayer loaded: ", registrationLayer);
+                        // console.log("registrationLayer loaded: ", evt);
+                        // // Get latest Kilometers reading
+                        // console.log("latest Kilometers reading");
+                        // getLastRideInfo();
+                        // getRideNumber();
+                        loadKnownLocationsLayer();
+                    });
+                }).otherwise(function (err) {
+                    console.log("Error loading registrationLayer Portal item: ", err);
+                });
+            }
+
+            function loadKnownLocationsLayer() {
+                // knownLocationsLayerId = //b3f5ad9b532b495793d22eacc6d0bc09
+                var knownLocationsItem = new PortalItem({
+                    id: knownLocationsItemId
+                });
+                knownLocationsItem.load().then(function (evt) {
+                    console.log("knownLocationsItem: ", knownLocationsItem);
+                    // Load the FeatureLayer
+                    // "https://services9.arcgis.com/kfCU77AsgNn9o1Ff/ArcGIS/rest/services/Mileage_Registration_Known_Location_Buffers/FeatureServer/0"
+                    knownLocationsLayer = new FeatureLayer(
+                        knownLocationsItem.url + "/0"
+                    );
+                    knownLocationsLayer.load().then(function (evt) {
+                        console.log("knownLocationsLayer loaded: ", evt);
+                        findAddress();
+                    });
+                }).otherwise(function (err) {
+                    console.log("Error loading knownLocationsLayer Portal item: ", err);
                 });
             }
 
@@ -428,8 +426,10 @@
                                     markerIcon.src = "images/marker-icon-128-green.png";
                                     currentAddressDiv.innerHTML = address;
                                     foundAddress = address;
-                                    console.log("Address found: ", address);
+                                    console.log("Address found by intersect: ", address);
                                     console.timeEnd("AddressSearch");
+                                    getLastRideInfo();
+                                    getRideNumber();
                                 });
                             } else {
                                 // get the address using the Esri Geocode Service
@@ -443,8 +443,10 @@
                                         var address = response.address;
                                         currentAddressDiv.innerHTML = response.attributes.Match_addr;
                                         foundAddress = address;
-                                        console.log("Address found: ", address);
+                                        console.log("Address found by geocode: ", address);
                                         console.timeEnd("AddressSearch");
+                                        getLastRideInfo();
+                                        getRideNumber();
                                     }, function (err) { // Show no address found
                                         currentAddressDiv.innerHTML = "Geen adres gevonden";
                                         foundAddress = "No address"
@@ -507,7 +509,7 @@
             btnUpdate.addEventListener("click", function (evt) {
                 console.log("btnUpdate clicked");
                 findAddress();
-                getRoute();
+                // getRoute();
             });
 
             // Add one to endKilometers
@@ -525,6 +527,8 @@
 
             // Get latest Kilometers reading
             function getLastRideInfo() {
+                // Get latest Kilometers reading
+                console.log("latest Kilometers reading");
                 var query = registrationLayer.createQuery();
                 query.outFields = "*";
                 query.orderByFields = "KmEind DESC";
