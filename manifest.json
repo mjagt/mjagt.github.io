@@ -13,7 +13,7 @@
         "sizes": "512x512"
       }
     ],
-    "start_url": "registratie.html?appId=2fLGWPJBamukvZwq&layerId=4f4b80d7330a46a3adaf7a342383cede",
+    "start_url": "registratie.html?appId=2fLGWPJBamukvZwq&registrationItemId=4f4b80d7330a46a3adaf7a342383cede&knownLocationsItemId=b3f5ad9b532b495793d22eacc6d0bc09",
     "background_color": "#d3d3d3",
     "display": "standalone",
     "theme_color": "#ffbb00"
