@@ -275,6 +275,7 @@
             var anonPanelElement = document.getElementById("anonymousPanel");
             var userIdElement = document.getElementById("userId");
             var messageDiv = document.getElementById("messageDiv");
+            var debugDiv = document.getElementById("debugDiv");
 
             var routeTask = new RouteTask({
                 url: "https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World"
@@ -351,6 +352,7 @@
                 });
                 registrationItem.load().then(function (evt) {
                     console.log("registrationItem: ", registrationItem);
+
                     // Load the FeatureLayer
                     // "https://services9.arcgis.com/kfCU77AsgNn9o1Ff/arcgis/rest/services/MileageRegistration/FeatureServer/0"
                     registrationLayer = new FeatureLayer(
@@ -358,6 +360,7 @@
                     );
                     registrationLayer.load().then(function (evt) {
                         console.log("registrationLayer loaded: ", registrationLayer);
+                        debugDiv.innerHTML += "<br>registrationLayer loaded";
                         // console.log("registrationLayer loaded: ", evt);
                         // // Get latest Kilometers reading
                         // console.log("latest Kilometers reading");
@@ -384,6 +387,7 @@
                     );
                     knownLocationsLayer.load().then(function (evt) {
                         console.log("knownLocationsLayer loaded: ", evt);
+                        debugDiv.innerHTML += "<br>knownLocationsLayer loaded";
                         findAddress();
                     });
                 }).otherwise(function (err) {
@@ -393,6 +397,7 @@
 
             function findAddress() {
                 console.time("AddressSearch");
+                debugDiv.innerHTML += "<br>findAddress()";
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(function (position) {
                         //console.log("currentLocation: ", position.coords.longitude);
@@ -529,6 +534,7 @@
             function getLastRideInfo() {
                 // Get latest Kilometers reading
                 console.log("latest Kilometers reading");
+                debugDiv.innerHTML += "<br>getLastRideInfo()";
                 var query = registrationLayer.createQuery();
                 query.outFields = "*";
                 query.orderByFields = "KmEind DESC";
@@ -549,6 +555,7 @@
 
             // Get ride number
             function getRideNumber() {
+                debugDiv.innerHTML += "<br>getRideNumber()";
                 var query = registrationLayer.createQuery();
                 var today = new Date().toLocaleDateString('en-US', {
                     month: '2-digit',
@@ -565,6 +572,7 @@
             }
 
             function getRoute() {
+                debugDiv.innerHTML += "<br>getRoute()";
                 if (messageDiv.style.display === "none") {
                     messageDiv.innerHTML = "Route berekenen...";
                     messageDiv.style.display = "block"
@@ -710,7 +718,7 @@
             <button id="plus"></button>
             <button id="minus"></button>
         </div>
-        <div id="debugDiv" style="display: block; padding: 5px; bottom: 5px; text-align: center;">V2.0</div>
+        <div id="debugDiv" style="display: block; padding: 5px; bottom: 5px; text-align: center; height: 100px; background: white; overflow-y: auto;">V2.0</div>
 
 
     </div>
