@@ -55,6 +55,11 @@
             margin: 5px;
         }
 
+        .chkBxSetDebug {
+            width: 15px;
+            height: 15px;
+        }
+
         button {
             width: 64px;
             height: 64px;
@@ -247,6 +252,12 @@
             var appId = getUrlVars()["appId"];
             var registrationItemId = getUrlVars()["registrationItemId"];
             var knownLocationsItemId = getUrlVars()["knownLocationsItemId"];
+            var debug = getUrlVars()["debug"];
+            if(debug == "true") {
+                debug = true;
+            } else {
+                debug = false;
+            }
 
             var featureLayer;
             var foundLocation;
@@ -275,6 +286,7 @@
             var anonPanelElement = document.getElementById("anonymousPanel");
             var userIdElement = document.getElementById("userId");
             var messageDiv = document.getElementById("messageDiv");
+            var chkBxSetDebug = document.getElementById("chkBxSetDebug");
             var debugDiv = document.getElementById("debugDiv");
 
             var routeTask = new RouteTask({
@@ -317,6 +329,12 @@
                 });
 
             function displaySignedInUI() {
+                if(debug) {
+                    debugDiv.style.display = "block";
+                    logConsole("debug true...");
+                } else {
+                    logConsole("debug false...");
+                }
 
                 var portal = new Portal();
                 // Setting authMode to immediate signs the user in once loaded
@@ -339,7 +357,7 @@
 
                     // Load the layers
                     console.log("start loading layers...");
-                    debugDiv.innerHTML += "<br>start loading layers...";
+                    logConsole("start loading layers...");
                     loadRegistrationLayer();
                     // Query the items based on the queryParams created from portal above
                     //portal.queryItems(queryParams).then(createGallery);
@@ -348,7 +366,7 @@
 
             function loadRegistrationLayer() {
                 // registrationLayerId = //4f4b80d7330a46a3adaf7a342383cede
-                debugDiv.innerHTML += "<br>registrationItemId: " + registrationItemId;
+                logConsole("registrationItemId: " + registrationItemId);
                 var registrationItem = new PortalItem({
                     id: registrationItemId
                 });
@@ -362,7 +380,7 @@
                     );
                     registrationLayer.load().then(function (evt) {
                         console.log("registrationLayer loaded: ", registrationLayer);
-                        debugDiv.innerHTML += "<br>registrationLayer loaded";
+                        logConsole("registrationLayer loaded");
                         // console.log("registrationLayer loaded: ", evt);
                         // // Get latest Kilometers reading
                         // console.log("latest Kilometers reading");
@@ -372,7 +390,7 @@
                     });
                 }).otherwise(function (err) {
                     console.log("Error loading registrationLayer Portal item: ", err);
-                    debugDiv.innerHTML += "<br>Error loading registrationLayer Portal item: " + err;
+                    logConsole("Error loading registrationLayer Portal item: " + err);
                 });
             }
 
@@ -390,18 +408,18 @@
                     );
                     knownLocationsLayer.load().then(function (evt) {
                         console.log("knownLocationsLayer loaded: ", evt);
-                        debugDiv.innerHTML += "<br>knownLocationsLayer loaded";
+                        logConsole("knownLocationsLayer loaded");
                         findAddress();
                     });
                 }).otherwise(function (err) {
                     console.log("Error loading knownLocationsLayer Portal item: ", err);
-                    debugDiv.innerHTML += "<br>Error loading knownLocationsLayer Portal item: " + err;
+                    logConsole("Error loading knownLocationsLayer Portal item: " + err);
                 });
             }
 
             function findAddress() {
                 console.time("AddressSearch");
-                debugDiv.innerHTML += "<br>findAddress()";
+                logConsole("findAddress()");
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(function (position) {
                         //console.log("currentLocation: ", position.coords.longitude);
@@ -538,7 +556,7 @@
             function getLastRideInfo() {
                 // Get latest Kilometers reading
                 console.log("latest Kilometers reading");
-                debugDiv.innerHTML += "<br>getLastRideInfo()";
+                logConsole("getLastRideInfo()");
                 var query = registrationLayer.createQuery();
                 query.outFields = "*";
                 query.orderByFields = "KmEind DESC";
@@ -552,14 +570,21 @@
                         previousLatitude = feature.attributes["Latitude"];
                         previousLongitude = feature.attributes["Longitude"];
                     });
-                    getRoute();
+                    if((previousAddress.substring(0,4) == "Nien" && foundAddress.substring(0,4) == "Kogg") || (previousAddress.substring(0,4) == "Kogg" && foundAddress.substring(0,4) == "Nien")) {
+                        console.log("Woon-werk detected...");
+                        endKilometers.value = previousKilometers + 67;
+                        messageDiv.innerHTML = "";
+                        messageDiv.style.display = "none";
+                    } else {
+                        getRoute();
+                    }
                 })
 
             }
 
             // Get ride number
             function getRideNumber() {
-                debugDiv.innerHTML += "<br>getRideNumber()";
+                logConsole("getRideNumber()");
                 var query = registrationLayer.createQuery();
                 var today = new Date().toLocaleDateString('en-US', {
                     month: '2-digit',
@@ -576,7 +601,7 @@
             }
 
             function getRoute() {
-                debugDiv.innerHTML += "<br>getRoute()";
+                logConsole("getRoute()");
                 if (messageDiv.style.display === "none") {
                     messageDiv.innerHTML = "Route berekenen...";
                     messageDiv.style.display = "block"
@@ -647,6 +672,20 @@
                 });
                 return vars;
             }
+
+            function logConsole(msg) {
+                debugDiv.innerHTML += "<br>" + msg;
+            }
+
+            chkBxSetDebug.addEventListener("click", function (evt) {
+                if(chkBxSetDebug.checked) {
+                    //setDebugDiv.style.display = "none";
+                    debugDiv.style.display = "block";
+                } else {
+                    //setDebugDiv.style.display = "block";
+                    debugDiv.style.display = "none";
+                }
+            });
         });
     </script>
 </head>
@@ -727,8 +766,9 @@
     </div>
 
     <div id="messageDiv" style="display: none; padding: 5px; text-align: center;"></div>
-    
-    <div id="debugDiv" style="display: block; padding: 15px; position: absolute; left: 0px; bottom: 0px; width: 100%; text-align: left; font-family: 'Courier New', Courier, monospace; font-size: 12px; height: 100px; background: black; color: white; overflow-x:hidden; overflow-y: auto;">V2.0</div>
+
+    <div id="setDebugDiv" style="display: block; padding: 15px; position: absolute; left: 0px; top: 0px; width: 100%; text-align: left; font-size: 12px; height: 30px; overflow-x:hidden; overflow-y: auto;"><input type="checkbox" class="chkBxSetDebug" id="chkBxSetDebug" /></div>
+    <div id="debugDiv" style="display: none; padding: 15px; position: absolute; left: 0px; bottom: 0px; width: 100%; text-align: left; font-family: 'Courier New', Courier, monospace; font-size: 12px; height: 100px; background: black; color: white; overflow-x:hidden; overflow-y: auto;">V2.0</div>
     <!-- <div id="itemGallery" class="esri-item-gallery" style="width: 100%;"></div> -->
 </body>
 
