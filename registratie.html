@@ -339,6 +339,7 @@
 
                     // Load the layers
                     console.log("start loading layers...");
+                    debugDiv.innerHTML += "<br>start loading layers...";
                     loadRegistrationLayer();
                     // Query the items based on the queryParams created from portal above
                     //portal.queryItems(queryParams).then(createGallery);
@@ -370,6 +371,7 @@
                     });
                 }).otherwise(function (err) {
                     console.log("Error loading registrationLayer Portal item: ", err);
+                    debugDiv.innerHTML += "<br>Error loading registrationLayer Portal item: " + err;
                 });
             }
 
@@ -392,6 +394,7 @@
                     });
                 }).otherwise(function (err) {
                     console.log("Error loading knownLocationsLayer Portal item: ", err);
+                    debugDiv.innerHTML += "<br>Error loading knownLocationsLayer Portal item: " + err;
                 });
             }
 
