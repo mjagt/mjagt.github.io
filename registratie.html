@@ -559,7 +559,8 @@
                 logConsole("getLastRideInfo()");
                 var query = registrationLayer.createQuery();
                 query.outFields = "*";
-                query.orderByFields = "KmEind DESC";
+                // query.orderByFields = "KmEind DESC";
+                query.orderByFields = "OBJECTID DESC";
                 query.num = 1;
                 registrationLayer.queryFeatures(query).then(function (response) {
                     var features = response.features;
