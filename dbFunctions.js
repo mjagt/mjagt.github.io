@@ -15,4 +15,4 @@ function writeDb(obj, dbName = 'db.json') {
     }
 }
 
-export default { readDb, writeDb }
+module.exports = { readDb, writeDb }
