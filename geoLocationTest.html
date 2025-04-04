@@ -40,15 +40,16 @@
       }
     </style>
 
-    <script type="module">
+    <!--<script type="module">
       import dbFunctions from "./dbFunctions.js";
-    </script>
+    </script>-->
 
     <script>
-      require(["esri/Map", "esri/views/MapView", "esri/Graphic"], function(
+      require(["esri/Map", "esri/views/MapView", "esri/Graphic", "./dbFunctions.js"], function(
         Map,
         MapView,
-        Graphic
+        Graphic,
+        dbFunctions
       ) {
         console.time("View load time");
 
