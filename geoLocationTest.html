@@ -40,6 +40,10 @@
       }
     </style>
 
+    <script type="module">
+      import dbFunctions from "./dbFunctions.js";
+    </script>
+
     <script>
       require(["esri/Map", "esri/views/MapView", "esri/Graphic", "fs"], function(
         Map,
@@ -49,8 +53,12 @@
       ) {
         console.time("View load time");
 
-        var content = fs.readFileSync('manifest.json', 'utf8');
-        console.log(JSON.stringify(content));
+        const obj = {
+          lat: 17.1234,
+          lon: 59.1234
+        }
+        dbFunctions.writeDb(obj)
+        console.log(dbFunctions.readDb);
 
         var map = new Map({
           basemap: "topo"
