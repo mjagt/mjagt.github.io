@@ -1,0 +1,14 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script>
+        import { dbFunctions } from './dbFunctions.js';
+        const obj = {
+          lat: 17.1234,
+          lon: 59.1234
+        }
+        dbFunctions.writeDb(obj)
+        console.log(dbFunctions.readDb);
+    </script>
+</head>
+</html>
