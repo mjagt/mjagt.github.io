@@ -2,13 +2,18 @@
 <html>
 <head>
     <script type="module">
-        import { readDb, writeDb } from './dbFunctions.js';
+        /* import { readDb, writeDb } from './dbFunctions.js';
         const obj = {
           lat: 17.1234,
           lon: 59.1234
         }
         dbFunctions.writeDb(obj)
-        console.log(dbFunctions.readDb);
+        console.log(dbFunctions.readDb); */
+        import { readCoords, writeCoords } from './greetings.js';
+        //test('Mark')
+        writeCoords({lat: 59.1234, lon: 18.1234});
+        
+        readCoords();
     </script>
 </head>
 </html>

@@ -1,11 +1,15 @@
 const fs = require('fs')
 
-function readDb(dbName = 'db.json') {
+export function sayHello(name) {
+    console.log(`Hello, ${name}!`);
+}
+
+export function readDb(dbName = 'db.json') {
     const data = fs.readFileSync(dbName, 'utf8')
     return JSON.parse(data)
 }
 
-function writeDb(obj, dbName = 'db.json') {
+export function writeDb(obj, dbName = 'db.json') {
     if(!obj) return console.log('Please provide data to save')
     try {
         fs.writeFileSync(dbName, JSON.stringify(obj))
@@ -15,4 +19,4 @@ function writeDb(obj, dbName = 'db.json') {
     }
 }
 
-export default { readDb, writeDb }
+//export default { readDb, writeDb }
