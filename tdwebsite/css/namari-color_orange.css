@@ -312,7 +312,9 @@ a,
 /* Banner Background and Text Colors */
 
 #banner {
-    background: url("../images/banner-images/banner-image-orange.jpg") no-repeat center top;
+    /* background: url("../images/banner-images/banner-image-orange.jpg") no-repeat center top; */
+    background: url("../images/banner-images/banner-image-green.jpg") no-repeat center top;
+    /* background: url("../images/banner-images/banner-image-gold.png") no-repeat center top; */
     background-size: cover;
 }
 
