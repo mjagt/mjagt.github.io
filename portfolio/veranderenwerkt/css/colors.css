@@ -118,10 +118,8 @@ Grey brown #a8a198 / rgb(168, 161, 152)
 /*------------------------------------------------------------------------------------------*/
 
 :root {
-    --header: #a8a198;
-    /* --primary: rgb(3, 32, 46);
-    --primary_0: rgb(3, 32, 46, 0);
-    --primary_100: rgb(3, 32, 46, 1); */
+    /* --header: #a8a198; */
+    --header: #41443d;
     --primary: #ff6300;
     --secondary: #96b7a2;
     --normal-text: #41443d;
@@ -131,8 +129,10 @@ Grey brown #a8a198 / rgb(168, 161, 152)
     --section-subtitle: #eae3d1;
     /*#017793;*/
     --section-heading: #888;
-    --link: #41443d;
-    --link-hover-active: #eae3d1;
+    /* --link: #41443d; */
+    --link: #eae3d1;
+    /* --link-hover-active: #eae3d1; */
+    --link-hover-active: #96b7a2;
     --border: #f5f5f5ff;
     --footer-text: #eae3d1;
 }
@@ -194,12 +194,12 @@ a:hover {
 }
 
 .pricing-block-content.featured {
-    border-color: var(--normal-text);
+    border-color: var(--header-text);
     /*#d2b356;*/
 }
 
 .pricing-block-content:hover {
-    border-color: var(--normal-text);
+    border-color: var(--primary);
     /*#d2b356;*/
 }
 
@@ -383,7 +383,7 @@ body {
     font-size: 42px;
     line-height: 60px;
     font-weight: 800;
-    color: var(--normal-text);
+    color: var(--header-text);
 }
 
 /**/
@@ -417,6 +417,10 @@ body {
     font-size: 34px;
     font-weight: 700;
     color: var(--section-title)
+}
+
+#products .section-title {
+    color: var(--section-subtitle);
 }
 
 .section-subtitle {
