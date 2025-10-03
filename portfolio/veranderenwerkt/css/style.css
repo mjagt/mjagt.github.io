@@ -2780,4 +2780,8 @@ blockquote {
         width: 33%;
     }
 
+    #logo {
+        display: none;
+    }
+
 }
