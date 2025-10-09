@@ -1104,7 +1104,7 @@ blockquote {
 }
 
 #development {
-    background-image: url("../images/gallery-images/development.jpg");
+    background-image: url("../images/gallery-images/app-development.jpg");
 }
 
 #sensor {
@@ -1116,19 +1116,19 @@ blockquote {
 }
 
 #projectmanagement {
-    background-image: url("../images/gallery-images/projectmanagement.jpg");
+    background-image: url("../images/gallery-images/project-management.jpg");
 }
 
-#geo-analyses {
-    background-image: url("../images/gallery-images/geo-analyses.jpg");
+#geo-development {
+    background-image: url("../images/gallery-images/geo-development.png");
 }
 
 #consultancy {
-    background-image: url("../images/gallery-images/consultancy.jpg");
+    background-image: url("../images/gallery-images/consultancy.png");
 }
 
 #training {
-    background-image: url("../images/gallery-images/training.png");
+    background-image: url("../images/gallery-images/training-course.jpg");
 }
 
 /* #gallery img {

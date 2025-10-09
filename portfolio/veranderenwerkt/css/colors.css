@@ -118,23 +118,27 @@ Grey brown #a8a198 / rgb(168, 161, 152)
 /*------------------------------------------------------------------------------------------*/
 
 :root {
-    /* --header: #a8a198; */
-    --header: #41443d;
+    /* --header: #d3bea7; */
+    --header: #e8e8e8;
+    /* --header: #ead7d1; */
     --primary: #ff6300;
-    --secondary: #96b7a2;
-    --normal-text: #41443d;
-    --header-text: #eae3d1;
-    --banner-text: #eae3d1;
-    --section-title: #41443d;
-    --section-subtitle: #eae3d1;
+    --secondary: #bac4bb;
+    --tertiary: #d3bea7;
+    --quaternary: #a49d98;
+    /* --normal-text: #41443d; */
+    --normal-text: #46433b;
+    --header-text: #ffffff;
+    --banner-text: white;
+    --section-title: #46433b;
+    --section-subtitle: #ffffff;
     /*#017793;*/
-    --section-heading: #888;
+    --section-heading: #a49d98;
     /* --link: #41443d; */
-    --link: #eae3d1;
+    --link: #46433b;
     /* --link-hover-active: #eae3d1; */
     --link-hover-active: #96b7a2;
     --border: #f5f5f5ff;
-    --footer-text: #eae3d1;
+    --footer-text: #ffffff;
 }
 
 body {
@@ -174,8 +178,9 @@ a:hover {
 }
 
 #main-heading {
-    text-shadow: 2px 0 var(--banner-text), -2px 0 var(--banner-text), 0 2px var(--banner-text), 0 -2px var(--banner-text),
-        1px 1px var(--banner-text), -1px -1px var(--banner-text), 1px -1px var(--banner-text), -1px 1px var(--banner-text);
+    /* text-shadow: 2px 0 var(--banner-text), -2px 0 var(--banner-text), 0 2px var(--banner-text), 0 -2px var(--banner-text),
+        1px 1px var(--banner-text), -1px -1px var(--banner-text), 1px -1px var(--banner-text), -1px 1px var(--banner-text); */
+    text-align: center;
 }
 
 #pricing-heading.section-title {
@@ -193,9 +198,12 @@ a:hover {
     max-width: 355px;
 }
 
-.pricing-block-content.featured {
-    border-color: var(--header-text);
-    /*#d2b356;*/
+.pricing-block-content.systematic {
+    background: var(--tertiary);
+}
+
+.pricing-block-content.breakthrough {
+    background: var(--quaternary);
 }
 
 .pricing-block-content:hover {
@@ -284,17 +292,17 @@ a:hover {
 
 .pricing {
     color: var(--normal-text);
-    background-color: var(--header-text);
+    /* background-color: var(--header-text); */
 }
 
 .pricing-block-content p {
     color: var(--header-text);
 }
 
-.featured .pricing {
+/* .featured .pricing {
     background-color: var(--normal-text);
     color: var(--header-text);
-}
+} */
 
 .pricing-block-content p.small {
     font-size: 12px;
@@ -343,7 +351,7 @@ a:hover {
 /* Banner Background and Text Colors */
 
 #banner {
-    background: url("../images/banner-images/lake.jpg") no-repeat center top;
+    background: url("../images/banner-images/banner.jpg") no-repeat center top;
     background-size: cover;
 }
 
@@ -394,19 +402,39 @@ body {
 #banner h1 {
     /* font-family: 'Open Sans', sans-serif, Arial, Helvetica; */
     font-family: 'Caveat', sans-serif, Arial, Helvetica;
-    font-size: 62px;
+    font-size: 82px;
     line-height: 60px;
     font-weight: 800;
-    color: var(--secondary);
+    color: var(--banner-text);
     /* color: var(--header-text) */
 }
 
 #banner h2 {
     font-family: 'Open Sans', sans-serif, Arial, Helvetica;
+    /* font-size: 58px; */
+    font-weight: 500;
+    color: var(--banner-text);
+    /* width: 70%; */
+    margin: auto;
+    /* color: var(--header-text) */
+}
+
+#banner h3 {
+    font-family: 'Open Sans', sans-serif, Arial, Helvetica;
     font-size: 18px;
     font-weight: 300;
     color: var(--banner-text);
+    /* max-width: 60%; */
+    margin: auto;
     /* color: var(--header-text) */
+}
+
+#banner h4 {
+    font-family: 'Caveat', sans-serif, Arial, Helvetica;
+    font-size: 38px;
+    line-height: 60px;
+    font-weight: 800;
+    color: var(--normal-text);
 }
 
 
@@ -419,7 +447,7 @@ body {
     color: var(--section-title)
 }
 
-#products .section-title {
+.pricing-section-title {
     color: var(--section-subtitle);
 }
 
@@ -489,7 +517,8 @@ h4 {
     font-family: 'Open Sans', sans-serif, Arial, Helvetica;
     font-size: 18px;
     font-weight: 400;
-    color: var(--header-text)
+    /* color: var(--header-text) */
+    color: var(--section-title);
 }
 
 h5 {
@@ -521,7 +550,8 @@ input[type="submit"] {
     font-family: 'Open Sans', sans-serif, Arial, Helvetica;
     font-size: 14px;
     font-weight: bold;
-    color: var(--header-text)
+    color: var(--header);
+    background: var(--link);
 }
 
 
@@ -529,7 +559,7 @@ input[type="submit"] {
 
 .button,
 input[type="submit"] {
-    border-color: var(--header-text);
+    border-color: var(--header);
 }
 
 
@@ -537,9 +567,9 @@ input[type="submit"] {
 
 .button:hover,
 input[type="submit"]:hover {
-    border-color: var(--primary);
+    border-color: var(--link-hover-active);
     /*#d2b356;*/
-    color: var(--primary);
+    color: var(--link-hover-active);
     /*#d2b356;*/
 }
 
@@ -549,29 +579,26 @@ input[type="submit"]:hover {
 
 /* Button Text */
 
-#banner .button {
+/* #banner .button {
     font-family: 'Open Sans', sans-serif, Arial, Helvetica;
     font-size: 16px;
     color: var(--banner-text);
-    /* color: var(--header-text); */
-}
+} */
 
 
 /* Button Color */
 
-#banner .button {
+/* #banner .button {
     border-color: var(--banner-text);
-    /* border-color: var(--header-text); */
-}
+} */
 
 
-/* Button Hover Color */
+/* Alternate Button Color */
 
-#banner .button:hover {
-    color: var(--primary);
-    /*#d2b356;*/
-    border-color: var(--primary);
-    /*#d2b356;*/
+.alternate {
+    color: var(--link);
+    border-color: var(--link);
+    background: var(--header);
 }
 
 
