@@ -2485,6 +2485,10 @@ blockquote {
         padding: 0;
     }
 
+    #banner h1 {
+        font-size: 62px;
+    }
+
     #banner h2 {
         width: 100%;
         font-size: 32px;
@@ -2632,10 +2636,6 @@ blockquote {
         font-size: 38px;
     }
 
-    #banner h1 {
-        font-size: 48px;
-    }
-
     /* Hide Elements */
     a#scrollUp {
         display: none !important;
@@ -2650,6 +2650,10 @@ blockquote {
     #wrapper {
         margin: 0;
         padding: 0;
+    }
+
+    #banner h1 {
+        font-size: 62px;
     }
 
     #banner h2 {
@@ -2796,6 +2800,10 @@ blockquote {
         padding: 0;
     }
 
+    #banner h1 {
+        font-size: 82px;
+    }
+
     #banner h2 {
         width: 100%;
         font-size: 58px;
@@ -2892,6 +2900,10 @@ blockquote {
 }
 
 @media (min-width: 1024px) {
+
+    #banner h1 {
+        font-size: 82px;
+    }
 
     #banner h2 {
         width: 70%;

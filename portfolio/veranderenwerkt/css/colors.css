@@ -402,7 +402,7 @@ body {
 #banner h1 {
     /* font-family: 'Open Sans', sans-serif, Arial, Helvetica; */
     font-family: 'Caveat', sans-serif, Arial, Helvetica;
-    font-size: 82px;
+    /* font-size: 82px; */
     line-height: 60px;
     font-weight: 800;
     color: var(--banner-text);
