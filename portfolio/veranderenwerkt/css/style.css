@@ -223,7 +223,8 @@ section {
 .row {
     max-width: 1245px;
     margin: 0 auto;
-    padding: 75px 0;
+    /* padding: 75px 0; */
+    padding: 45px 0;
     position: relative;
 }
 
@@ -1688,7 +1689,7 @@ blockquote {
 }
 
 .pricing-list {
-    padding-left: 15px;
+    padding-left: 20px;
 }
 
 .pricing-block ul {

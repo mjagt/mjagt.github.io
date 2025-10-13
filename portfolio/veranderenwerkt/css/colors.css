@@ -473,12 +473,12 @@ body {
 
 /* About */
 
-#contact {
+/* #contact {
     font-family: 'Open Sans', sans-serif, Arial, Helvetica;
     font-size: 15px;
     font-weight: bold;
     color: var(--normal-text)
-}
+} */
 
 .text-on-image,
 .text-on-image h4 {
