@@ -128,7 +128,7 @@ Grey brown #a8a198 / rgb(168, 161, 152)
     /* --normal-text: #41443d; */
     --normal-text: #46433b;
     --header-text: #ffffff;
-    --banner-text: white;
+    --banner-text: #46433b;
     --section-title: #46433b;
     --section-subtitle: #ffffff;
     /*#017793;*/
@@ -351,7 +351,7 @@ a:hover {
 /* Banner Background and Text Colors */
 
 #banner {
-    background: url("../images/banner-images/banner.jpg") no-repeat center top;
+    background: url("../images/banner-images/banner.png") no-repeat center top;
     background-size: cover;
 }
 
@@ -423,7 +423,7 @@ body {
     font-family: 'Open Sans', sans-serif, Arial, Helvetica;
     font-size: 18px;
     font-weight: 300;
-    color: var(--banner-text);
+    color: var(--header-text);
     /* max-width: 60%; */
     margin: auto;
     /* color: var(--header-text) */
