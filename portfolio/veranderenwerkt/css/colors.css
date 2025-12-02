@@ -421,8 +421,8 @@ body {
 
 #banner h3 {
     font-family: 'Open Sans', sans-serif, Arial, Helvetica;
-    font-size: 18px;
-    font-weight: 300;
+    font-size: 24px;
+    font-weight: 500;
     color: var(--header-text);
     /* max-width: 60%; */
     margin: auto;
@@ -453,7 +453,7 @@ body {
 
 .section-subtitle {
     font-family: 'Open Sans', sans-serif, Arial, Helvetica;
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 300;
     color: var(--section-subtitle);
 }
