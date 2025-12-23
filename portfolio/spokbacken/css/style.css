@@ -572,7 +572,7 @@ section {
     -moz-transition: all 0.3s ease-out;
     -o-transition: all 0.3s ease-out;
     transition: all 0.3s ease-out;
-    opacity: 0.5;
+    /* opacity: 0.5; */
 }
 
 #header.nav-solid .social-icons a:hover {
@@ -817,7 +817,7 @@ h6 {
 .section-heading h3 {
     font-size: 14px;
     font-weight: bold;
-    color: #ccc;
+    color: #999;
     letter-spacing: 2px;
     padding-bottom: 0;
 }
@@ -1502,7 +1502,7 @@ blockquote {
     transition: all 0.2s ease-in-out 0s;
     position: relative;
     border: 10px solid #fff;
-    min-height: 640px;
+    min-height: 500px;
 }
 
 
@@ -1582,7 +1582,8 @@ blockquote {
 
 #landing-footer ul {
     list-style: none;
-    text-align: right;
+    /* text-align: right; */
+    text-align: center;
 }
 
 #landing-footer li {
@@ -1592,12 +1593,14 @@ blockquote {
 /* Scroll Up */
 
 #scrollUp {
-    bottom: 15px;
-    right: 30px;
+    /* bottom: 15px; */
+    /* right: 30px; */
+    bottom: 2px;
+    right: 12px;
     width: 70px;
     height: 80px;
-    margin-bottom: -10px;
-    padding: 0 5px 20px 5px;
+    /* margin-bottom: -10px; */
+    /* padding: 0 5px 20px 5px; */
     text-align: center;
     text-decoration: none;
     color: #fff;
@@ -2258,11 +2261,11 @@ blockquote {
         padding: 0;
     }
 
-    .page-border,
+    /* .page-border,
     #scrollUp,
     #scrollUp:before {
         display: none;
-    }
+    } */
 
     .row {
         padding: 15px !important;
@@ -2360,7 +2363,8 @@ blockquote {
 
     #landing-footer .social-icons {
         float: right;
-        width: 50%;
+        /* width: 50%; */
+        width: 100%;
     }
 
     /*-----------------Typography-----------------*/
@@ -2373,9 +2377,9 @@ blockquote {
     }
 
     /* Hide Elements */
-    a#scrollUp {
+    /* a#scrollUp {
         display: none !important;
-    }
+    } */
 
 }
 
@@ -2388,11 +2392,11 @@ blockquote {
         padding: 0;
     }
 
-    .page-border,
+    /* .page-border,
     #scrollUp,
     #scrollUp:before {
         display: none;
-    }
+    } */
 
 
     .row {
@@ -2474,7 +2478,7 @@ blockquote {
 
     #landing-footer .social-icons {
         float: right;
-        width: 50%;
+        width: 100%;
     }
 
 }
@@ -2504,7 +2508,7 @@ blockquote {
     #header aside {
         display: inline-block;
         position: absolute;
-        top: 40px;
+        top: 20px;
         right: 60px;
         padding-top: 3px;
         padding-right: 5px;

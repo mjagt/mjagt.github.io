@@ -23,11 +23,11 @@
     --banner-text: #1bc5cf;
     --section-title: #1bc5cf;
     /* --section-subtitle: #66635B; */
-    --section-subtitle: #555;
+    --section-subtitle: #333;
     --link: #111;
     --link-hover-active: #1bc5cf;
     --border: #f5f5f5ff;
-    --footer-text: #999;
+    --footer-text: #777;
 }
 
 body {
@@ -96,7 +96,8 @@ a:hover,
 #header.nav-solid a,
 #header.nav-solid i,
 #nav-mobile ul li a {
-    color: #333;
+    /* color: #333; */
+    color: #111;
 }
 
 
@@ -305,8 +306,11 @@ body {
 .section-subtitle {
     font-family: 'Open Sans', sans-serif, Arial, Helvetica;
     font-size: 16px;
-    font-weight: 300;
-    color: var(--section-subtitle);
+    /* font-weight: 300; */
+    font-weight: 600;
+    font-style: italic;
+    /* color: var(--section-subtitle); */
+    color: var(--section-title);
 }
 
 /* Testimonial */
@@ -453,4 +457,8 @@ input[type="submit"]:hover {
 #landing-footer i {
     /* color: #999; */
     color: var(--footer-text);
+}
+
+#calendar {
+    width: 100%;
 }
