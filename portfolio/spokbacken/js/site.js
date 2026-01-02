@@ -49,7 +49,7 @@ $(document).ready(function () {
 
 	const interval = setInterval(function () {
 		getWeatherData();
-	}, 120000);
+	}, 300000);
 
 });
 
@@ -73,14 +73,19 @@ $(window).load(function () { // makes sure the whole site is loaded
 });
 
 function getWeatherData() {
-	const json = $.getJSON('https://api.thingspeak.com/channels/3202643/feeds.json?results=1', function (data) {
-		let temperature = Math.round(data.feeds[0].field3 * 100) / 100;
-		let humidity = Math.round(data.feeds[0].field4 * 100) / 100;
+	const json = $.getJSON('https://api.thingspeak.com/channels/3202643/feeds.json?results=5', function (data) {
+		let dataFound = false;
+		data.feeds.forEach((feed) => {
+			if (feed.field1 != null && !dataFound) {
+				let temperature = Math.round(feed.field1 * 100) / 100;
+				let humidity = Math.round(feed.field2 * 100) / 100;
 
-		console.log(temperature);
-		if (temperature != 0) {
-			$('#temperature')[0].innerHTML = temperature;
-			$('#humidity')[0].innerHTML = humidity;
-		}
+				$('#temperature')[0].innerHTML = temperature;
+				$('#humidity')[0].innerHTML = humidity;
+
+				// console.log(feed.entry_id + ": " + temperature);
+				dataFound = true;
+			}
+		});
 	});
 }
